@@ -3,13 +3,9 @@ package com.coinstats.app.di
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
 import android.os.Build
 import com.coinstats.app.BuildConfig
-import com.coinstats.app.data.repository.CoinsRepositoryImpl
-import com.coinstats.app.data.source.CoinStatsApi
-import com.coinstats.app.data.source.local.AppDatabase
-import com.coinstats.app.domain.repository.CoinsRepository
+import com.coinstats.app.data.source.remote.CoinStatsApi
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -25,7 +21,7 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class NetworkModule {
+open class NetworkModule {
     //region Network Utils
     @Provides
     @Singleton
@@ -49,7 +45,11 @@ class NetworkModule {
     ): OkHttpClient {
         val client = OkHttpClient.Builder()
         if (BuildConfig.DEBUG) {
-            client.addInterceptor(HttpLoggingInterceptor())
+            client.addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BASIC
+                }
+            )
         }
         return client.build()
     }
@@ -113,19 +113,8 @@ class NetworkModule {
     //region Api
     @Singleton
     @Provides
-    fun provideCoinStatsApi(retrofit: Retrofit): CoinStatsApi {
+    open fun provideCoinStatsApi(retrofit: Retrofit): CoinStatsApi {
         return retrofit.create(CoinStatsApi::class.java)
-    }
-    //endregion
-
-    //region Repository
-    @Singleton
-    @Provides
-    fun provideCoinsRepository(
-        appDatabase: AppDatabase,
-        coinStatsApi: CoinStatsApi
-    ): CoinsRepository {
-        return CoinsRepositoryImpl(appDatabase, coinStatsApi)
     }
     //endregion
 }

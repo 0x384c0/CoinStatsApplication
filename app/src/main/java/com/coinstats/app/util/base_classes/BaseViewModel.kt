@@ -1,6 +1,5 @@
 package com.coinstats.app.util.base_classes
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
@@ -23,10 +22,12 @@ abstract class BaseViewModel : ViewModel() {
     protected val compositeDisposable = CompositeDisposable()
 
     fun showAlert(e: Throwable) {
+        hideLoading()
         showAlertBinding.postValue(e)
     }
 
     fun showAlert(text: String) {
+        hideLoading()
         showAlertStringBinding.postValue(text)
     }
 
