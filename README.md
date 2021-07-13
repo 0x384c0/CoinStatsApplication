@@ -1,6 +1,9 @@
 # CoinStats App
 A sample android app that shows 20 most popular crypto currencies and able to search by keywords al local database
 
+### Build Requrements
+- Android Studio 4.2.2
+
 ### Limitations
 - public [CoinStats api](https://documenter.getpostman.com/view/5734027/RzZ6Hzr3) does not support search by keywords, only [private api](https://api.coin-stats.com/v4/coins?&limit=5&keyword=doge) does, but it is obfuscated
 - so in this app it possible to search within cached data only (20 most popular crypto currencies)
@@ -32,3 +35,10 @@ The following diagram shows the structure of this project with 3 layers:
 ### Tests
 - there is [GetCoinsUseCaseTests](app/src/androidTest/java/com/coinstats/app/GetCoinsUseCaseTests.kt) created to cover domain logick
 - network and database modules are [mocked](app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
+
+### TODO
+- creat CI pipeline for building and uploading release to Github
+  - use github actions and fastlane
+  - use [git-crypt](https://github.com/AGWA/git-crypt) for keeping signing data
+- 100% test and documetaion coverage
+- split presentaion utils into reusable sub-modules, connected with Hilt
