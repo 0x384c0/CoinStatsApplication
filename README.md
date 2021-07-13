@@ -22,7 +22,13 @@ The following diagram shows the structure of this project with 3 layers:
 1. Repository returns data from a Data Source (Cached or Remote).
 1. Information flows back to the UI where we display the list of posts.
 
+### Frameworks
+
+1. [AndroidX](https://developer.android.com/jetpack/androidx)
+1. [Hilt](https://dagger.dev/hilt/)
+1. [RxJava](https://github.com/ReactiveX/RxJava)
+1. [Retrofit](https://square.github.io/retrofit/)
 
 ### Tests
-- there is [GetCoinsUseCaseTests](app/src/androidTest/java/com/coinstats/app/GetCoinsUseCaseTests.kt) created to cover domain
-- network and database modules is [mocked](app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
+- there is [GetCoinsUseCaseTests](app/src/androidTest/java/com/coinstats/app/GetCoinsUseCaseTests.kt) created to cover domain logick
+- network and database modules are [mocked](app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
