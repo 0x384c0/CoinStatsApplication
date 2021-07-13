@@ -9,5 +9,4 @@ fun Double.toAmount(currency:String): String {
 fun Double.toAmount(): String {
     return NumberFormatter
         .formatToStringTwoZeros(this)
-        .replace(".00", "")
 }
