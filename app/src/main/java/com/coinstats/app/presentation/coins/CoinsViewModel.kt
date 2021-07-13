@@ -21,7 +21,7 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
     fun refresh() {
         showLoading()
         getCoinsUseCase
-            .getCoins(searchKeyword.value)
+            .getCoins()
             .subscribeMain(
                 onNext = {
                     hideLoading()
