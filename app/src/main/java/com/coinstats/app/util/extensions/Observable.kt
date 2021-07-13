@@ -12,27 +12,29 @@ import io.reactivex.schedulers.Schedulers
 
 
 /**
- * Запуск onNext в main thread
+ * subscribe On io thread
+ * observe On main Thread
  */
 @CheckReturnValue
 @SchedulerSupport(SchedulerSupport.NONE)
-fun <T> Observable<T>.subscribeOnMain(
+fun <T> Observable<T>.subscribeMain(
     onNext: ((T) -> Unit),
     onError: ((Throwable) -> Unit)? = null,
     onComplete: ((Unit) -> Unit)? = null
 ): Disposable {
     return subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(AndroidSchedulers.mainThread(), true)
         .subscribe(onNext, { onError?.invoke(it) }, { onComplete?.invoke(Unit) })
 }
 
 
 /**
- * Запуск onNext в main thread
+ * subscribe On io thread
+ * observe On main Thread
  */
 @CheckReturnValue
 @SchedulerSupport(SchedulerSupport.NONE)
-fun Completable.subscribeOnMain(
+fun Completable.subscribeMain(
     onNext: (() -> Unit),
     onError: ((Throwable) -> Unit)? = null
 ): Disposable {

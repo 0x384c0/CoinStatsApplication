@@ -1,6 +1,11 @@
 package com.coinstats.app.presentation.coins
 
+import android.app.SearchManager
+import android.content.Context
 import android.view.LayoutInflater
+import android.view.Menu
+import androidx.appcompat.widget.SearchView
+import com.coinstats.app.R
 import com.coinstats.app.databinding.ActivityCoinsBinding
 import com.coinstats.app.databinding.ItemCoinBinding
 import com.coinstats.app.domain.model.Coin
@@ -40,6 +45,26 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
 
     override fun setupView() {
         binding.recyclerView.adapter = adapter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.options_menu, menu)
+        // Associate searchable configuration with the SearchView
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu!!.findItem(R.id.search).actionView as SearchView).apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    viewModel.search(query)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.search(newText)
+                    return true
+                }
+            })
+        }
+        return true
     }
     //endregion
 
