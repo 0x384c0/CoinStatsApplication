@@ -1,6 +1,7 @@
 package com.coinstats.app.presentation.coins
 
 import androidx.lifecycle.MutableLiveData
+import com.coinstats.app.BuildConfig
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
 import com.coinstats.app.util.base_classes.BaseViewModel
@@ -39,7 +40,7 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
         refresh()
         searchKeyword
             .skip(1)
-            .debounce(3, TimeUnit.SECONDS)
+            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
             .flatMapSingle { getCoinsUseCase.searchCoins(it) }
             .subscribeMain(onNext = {
                 if (it.isNotEmpty())
