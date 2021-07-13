@@ -6,7 +6,10 @@ import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
 import com.coinstats.app.BuildConfig
+import com.coinstats.app.data.repository.CoinsRepositoryImpl
 import com.coinstats.app.data.source.CoinStatsApi
+import com.coinstats.app.data.source.local.AppDatabase
+import com.coinstats.app.domain.repository.CoinsRepository
 import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
@@ -112,6 +115,17 @@ class NetworkModule {
     @Provides
     fun provideCoinStatsApi(retrofit: Retrofit): CoinStatsApi {
         return retrofit.create(CoinStatsApi::class.java)
+    }
+    //endregion
+
+    //region Repository
+    @Singleton
+    @Provides
+    fun provideCoinsRepository(
+        appDatabase: AppDatabase,
+        coinStatsApi: CoinStatsApi
+    ): CoinsRepository {
+        return CoinsRepositoryImpl(appDatabase, coinStatsApi)
     }
     //endregion
 }
