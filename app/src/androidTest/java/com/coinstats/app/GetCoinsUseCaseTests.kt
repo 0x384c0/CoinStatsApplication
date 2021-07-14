@@ -1,5 +1,6 @@
 package com.coinstats.app
 
+import androidx.paging.*
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -24,57 +25,35 @@ class GetCoinsUseCaseTests {
     fun setup() {
         hiltRule.inject()
     }
-
-    private fun loadCoins(): TestObserver<List<Coin>> {
-        val observer = TestObserver<List<Coin>>()
-        getCoinsUseCase
-            .getCoins()
-            .subscribe(observer)
-        return observer
-    }
     //endregion
 
     //region Tests
     @Test
-    fun testGetCoins() {
-        //load data and populate cache
-        val observer = loadCoins()
-        observer.assertComplete()
-        observer.assertNoErrors()
-        val result = observer.values().last()
-
-        //asserts
-        assertEquals(20, result.count())
-    }
-
-    @Test
-    fun testGetCoinsFromCache() {
-        //load data and populate cache
-        val observer = loadCoins()
-        observer.assertComplete()
-        observer.assertNoErrors()
-
-        //load data from cache and network
-        val observerWithCache = loadCoins()
-        observerWithCache.assertNoErrors()
-        observerWithCache.assertComplete()
-        observerWithCache.assertValueCount(2)
-
-        val resultCache = observerWithCache.values().first()
-        val result = observerWithCache.values().last()
-
-        //asserts
-        assertEquals(20, resultCache.count())
-        assertEquals(20, result.count())
+    @OptIn(ExperimentalPagingApi::class)
+    fun testMediator() {
+        val pagingState = PagingState<Int, Coin>(
+            listOf(),
+            null,
+            PagingConfig(20),
+            20
+        )
+        val observerMediator = TestObserver<RemoteMediator.MediatorResult>()
+        getCoinsUseCase.getRemoteMediator()
+            .loadSingle(LoadType.REFRESH, pagingState)
+            .subscribe(observerMediator)
+        observerMediator.awaitTerminalEvent()
+        observerMediator
+            .assertNoErrors()
+            .assertValueCount(1)
+        val result = observerMediator.values().last()
+        assert(result is RemoteMediator.MediatorResult.Success)
     }
 
     @Test
     @Suppress("SpellCheckingInspection")
     fun testSearch() {
         //load data and populate cache
-        val observer = loadCoins()
-        observer.assertComplete()
-        observer.assertNoErrors()
+        testMediator()
 
         //search from cache
         val observerSearch = TestObserver<List<Coin>>()

@@ -1,14 +1,21 @@
 package com.coinstats.app.domain.usecase
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingSource
+import androidx.paging.rxjava2.RxRemoteMediator
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.repository.CoinsRepository
-import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
 class GetCoinsUseCase @Inject constructor(private val repository: CoinsRepository) {
-    fun getCoins(): Observable<List<Coin>> {
-        return repository.getCoins()
+    @OptIn(ExperimentalPagingApi::class)
+    fun getRemoteMediator(): RxRemoteMediator<Int, Coin> {
+        return repository.getRemoteMediator()
+    }
+
+    fun getPagingSource(): PagingSource<Int, Coin> {
+        return repository.getPagingSource()
     }
 
     fun searchCoins(keyword: String?): Single<List<Coin>> {

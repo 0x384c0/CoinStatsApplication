@@ -1,8 +1,9 @@
 package com.coinstats.app.presentation.base
 
-import android.widget.Toast
+import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.coinstats.app.util.base_classes.BaseMVVMViewBindingActivity
+import com.google.android.material.snackbar.Snackbar
 
 abstract class BaseActivity<T : ViewBinding> : BaseMVVMViewBindingActivity<T>() {
     //region Overrides
@@ -17,7 +18,9 @@ abstract class BaseActivity<T : ViewBinding> : BaseMVVMViewBindingActivity<T>() 
 
     //region Others
     private fun toast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        val root = findViewById<ViewGroup>(android.R.id.content).getChildAt(0)
+        Snackbar.make(root, message, Snackbar.LENGTH_SHORT)
+            .show()
     }
     //endregion
 }

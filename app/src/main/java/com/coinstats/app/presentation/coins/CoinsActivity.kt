@@ -1,56 +1,72 @@
 package com.coinstats.app.presentation.coins
 
-import android.app.SearchManager
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.Menu
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import com.coinstats.app.R
 import com.coinstats.app.databinding.ActivityCoinsBinding
-import com.coinstats.app.databinding.ItemCoinBinding
-import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.presentation.base.BaseActivity
-import com.coinstats.app.util.adapters.SingleViewBindingAdapter
-import com.coinstats.app.util.extensions.load
-import com.coinstats.app.util.extensions.toAmount
+import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
+import com.coinstats.app.presentation.coins.adapter.DataLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
-    //region Loading
-    override fun showLoading() {
-        binding.swipeRefreshLayout.isRefreshing = true
-    }
-
-    override fun hideLoading() {
-        binding.swipeRefreshLayout.isRefreshing = false
-    }
-    //endregion
 
     //region View initialization
     override fun inflateViewBinding(layoutInflater: LayoutInflater): ActivityCoinsBinding {
         return ActivityCoinsBinding.inflate(layoutInflater)
     }
 
-    private val adapter by lazy {
-        SingleViewBindingAdapter<Coin, ItemCoinBinding>(
-            inflate = { ItemCoinBinding.inflate(layoutInflater, it, false) },
-            bindViewHandler = { binding, coin ->
-                binding.imageView.load(coin.icon)
-                binding.textViewName.text = coin.name
-                binding.textViewPrice.text = coin.price.toAmount("$")
-            }
-        )
-    }
+    private val adapter by lazy { CoinsAdapter(layoutInflater) }
 
     override fun setupView() {
-        binding.recyclerView.adapter = adapter
+        setupRecyclerView()
+        setupSwipeToRefresh()
     }
 
+    private fun setupRecyclerView() {
+        binding.recyclerView.adapter = adapter.withLoadStateFooter(DataLoadStateAdapter(adapter))
+    }
+
+    @OptIn(FlowPreview::class)
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            adapter.refresh()
+        }
+        adapter.addLoadStateListener { loadStates ->
+            binding.swipeRefreshLayout.isRefreshing =
+                loadStates.mediator?.refresh is LoadState.Loading
+        }
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow
+                .debounce(TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS))
+                .collect { loadStates ->
+                    val error = listOfNotNull(
+                        loadStates.mediator?.append,
+                        loadStates.mediator?.refresh,
+                        loadStates.mediator?.prepend
+                    )
+                        .filterIsInstance<LoadState.Error>()
+                        .firstOrNull()
+                    if (error != null) {
+                        viewModel.showAlert(error.error)
+                    }
+                }
+        }
+    }
+    //endregion
+
+    //region Menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
         // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         (menu!!.findItem(R.id.search).actionView as SearchView).apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -71,11 +87,14 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     //region MVVM
     private val viewModel by lazy { getViewModel(CoinsViewModel::class.java) }
     override fun bindData() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
+        viewModel.coinsPagingBinding.observe(this) {
+            adapter.submitData(lifecycle, it)
         }
-        viewModel.coinsLiveData.observe(this) {
-            adapter.data = it
+        viewModel.coinsSearchBinding.observe(this) {
+            adapter.submitData(lifecycle, it)
+        }
+        viewModel.refreshEnabled.observe(this) {
+            binding.swipeRefreshLayout.isEnabled = it
         }
     }
     //endregion

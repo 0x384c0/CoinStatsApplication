@@ -7,7 +7,7 @@ import io.reactivex.Single
 
 
 class MockCoinStatsApi : CoinStatsApi {
-    override fun getCoins(limit: Int): Single<CoinResponse> {
+    override fun getCoins(skip: Int, limit: Int): Single<CoinResponse> {
         val coins = listOf(
             Coin(
                 id = "bitcoin",
