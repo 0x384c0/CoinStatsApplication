@@ -12,8 +12,8 @@ interface CoinRemoteKeysDao {
     fun insertAll(remoteKey: List<CoinRemoteKeys>)
 
     @Query("SELECT * FROM CoinRemoteKeys WHERE coinId = :coinId")
-    fun remoteKeysByCoinId(coinId: String): CoinRemoteKeys?
+    fun delete(coinId: String): CoinRemoteKeys?
 
     @Query("DELETE FROM CoinRemoteKeys")
-    fun clearRemoteKeys()
+    fun deleteAll()
 }

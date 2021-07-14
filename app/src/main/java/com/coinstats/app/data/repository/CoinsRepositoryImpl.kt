@@ -30,6 +30,6 @@ class CoinsRepositoryImpl(
     }
 
     override fun getPagingSource(): PagingSource<Int, Coin> {
-        return dataBase.coinDao.getPagingSource()
+        return dataBase.coinDao.getAllPagingSource()
     }
 }

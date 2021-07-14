@@ -72,7 +72,7 @@ class PageKeyedRemoteMediator(
 
         try {
             if (loadType == LoadType.REFRESH) {
-                db.coinRemoteKeysDao.clearRemoteKeys()
+                db.coinRemoteKeysDao.deleteAll()
                 db.coinDao.deleteAll()
             }
 
@@ -94,20 +94,20 @@ class PageKeyedRemoteMediator(
 
     private fun getRemoteKeyForLastItem(state: PagingState<Int, Coin>): CoinRemoteKeys? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { repo ->
-            db.coinRemoteKeysDao.remoteKeysByCoinId(repo.id)
+            db.coinRemoteKeysDao.delete(repo.id)
         }
     }
 
     private fun getRemoteKeyForFirstItem(state: PagingState<Int, Coin>): CoinRemoteKeys? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { coin ->
-            db.coinRemoteKeysDao.remoteKeysByCoinId(coin.id)
+            db.coinRemoteKeysDao.delete(coin.id)
         }
     }
 
     private fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Coin>): CoinRemoteKeys? {
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { id ->
-                db.coinRemoteKeysDao.remoteKeysByCoinId(id)
+                db.coinRemoteKeysDao.delete(id)
             }
         }
     }
