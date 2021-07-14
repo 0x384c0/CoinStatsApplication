@@ -13,34 +13,48 @@ import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
 import com.coinstats.app.util.base_classes.BaseViewModel
 import com.coinstats.app.util.extensions.disposedBy
+import com.coinstats.app.util.extensions.subscribeMain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUseCase) :
     BaseViewModel() {
+    //region Binding
+    val refreshEnabled = MutableLiveData(true)
     val coinsPagingBinding = MutableLiveData<PagingData<Coin>>()
+    val coinsSearchBinding = MutableLiveData<PagingData<Coin>>()
     private var searchKeyword = BehaviorSubject.createDefault("")
 
     fun search(keyword: String?) {
         searchKeyword.onNext(keyword ?: "")
     }
+    //endregion
 
+    //region LifeCycle
     override fun onCreate() {
         setupCoinsBinding()
-//        searchKeyword
-//            .skip(1)
-//            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
-//            .flatMapSingle { getCoinsUseCase.searchCoins(it) }
-//            .subscribeMain(onNext = {
-//                if (it.isNotEmpty())
-//                    coinsBinding.value = it
-//            })
-//            .disposedBy(compositeDisposable)
+        searchKeyword
+            .skip(1)
+            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
+            .flatMapSingle { query -> getCoinsUseCase.searchCoins(query).map { query to it } }
+            .subscribeMain(onNext = {
+                val isSearching = it.first.isBlank().not()
+                if (isSearching) {
+                    coinsSearchBinding.value = PagingData.from(it.second)
+                } else {
+                    coinsPagingBinding.value = coinsPagingBinding.value
+                }
+                refreshEnabled.value = isSearching.not()
+            })
+            .disposedBy(compositeDisposable)
     }
+    //endregion
 
+    //region Others
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
     private fun setupCoinsBinding() {
         Pager(
@@ -57,5 +71,5 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
             }
             .disposedBy(compositeDisposable)
     }
-
+    //endregion
 }

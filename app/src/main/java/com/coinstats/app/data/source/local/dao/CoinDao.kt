@@ -12,7 +12,7 @@ import io.reactivex.Single
 @Dao
 interface CoinDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun createAll(objects: List<Coin>)  //TODO: rename to insert all
+    fun insertAll(objects: List<Coin>)
 
     @Query("DELETE FROM Coin")
     fun deleteAll()

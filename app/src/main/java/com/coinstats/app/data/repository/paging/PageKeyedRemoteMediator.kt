@@ -82,7 +82,7 @@ class PageKeyedRemoteMediator(
                 CoinRemoteKeys(coinId = it.id, prevKey = prevKey, nextKey = nextKey)
             }
             db.coinRemoteKeysDao.insertAll(keys)
-            db.coinDao.createAll(data)
+            db.coinDao.insertAll(data)
             db.setTransactionSuccessful()
 
         } finally {

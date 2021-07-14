@@ -35,7 +35,7 @@ android {
             //Constants
             buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
             buildConfigField 'int', 'ITEMS_PER_PAGE', '20'
-            buildConfigField 'long', 'SEARCH_DELAY_SEC', '3'
+            buildConfigField 'long', 'SEARCH_DELAY_SEC', '1'
 
             //Here will be singing information for CI
             //signingConfig signingConfigs.release
@@ -54,7 +54,7 @@ android {
             //Constants
             buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
             buildConfigField 'int', 'ITEMS_PER_PAGE', '20'
-            buildConfigField 'long', 'SEARCH_DELAY_SEC', '3'
+            buildConfigField 'long', 'SEARCH_DELAY_SEC', '1'
         }
     }
     compileOptions {

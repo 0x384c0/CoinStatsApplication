@@ -93,6 +93,12 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
         viewModel.coinsPagingBinding.observe(this) {
             adapter.submitData(lifecycle, it)
         }
+        viewModel.coinsSearchBinding.observe(this) {
+            adapter.submitData(lifecycle, it)
+        }
+        viewModel.refreshEnabled.observe(this) {
+            binding.swipeRefreshLayout.isEnabled = it
+        }
     }
     //endregion
 }
