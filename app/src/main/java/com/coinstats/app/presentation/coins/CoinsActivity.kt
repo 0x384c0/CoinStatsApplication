@@ -7,12 +7,8 @@ import android.view.Menu
 import androidx.appcompat.widget.SearchView
 import com.coinstats.app.R
 import com.coinstats.app.databinding.ActivityCoinsBinding
-import com.coinstats.app.databinding.ItemCoinBinding
-import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.presentation.base.BaseActivity
-import com.coinstats.app.util.adapters.SingleViewBindingAdapter
-import com.coinstats.app.util.extensions.load
-import com.coinstats.app.util.extensions.toAmount
+import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,16 +28,7 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
         return ActivityCoinsBinding.inflate(layoutInflater)
     }
 
-    private val adapter by lazy {
-        SingleViewBindingAdapter<Coin, ItemCoinBinding>(
-            inflate = { ItemCoinBinding.inflate(layoutInflater, it, false) },
-            bindViewHandler = { binding, coin ->
-                binding.imageView.load(coin.icon)
-                binding.textViewName.text = coin.name
-                binding.textViewPrice.text = coin.price.toAmount("$")
-            }
-        )
-    }
+    private val adapter by lazy { CoinsAdapter(layoutInflater) }
 
     override fun setupView() {
         binding.recyclerView.adapter = adapter
@@ -74,8 +61,9 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             viewModel.refresh()
         }
-        viewModel.coinsLiveData.observe(this) {
-            adapter.data = it
+
+        viewModel.coinsPagingBinding.observe(this) {
+            adapter.submitData(lifecycle, it)
         }
     }
     //endregion

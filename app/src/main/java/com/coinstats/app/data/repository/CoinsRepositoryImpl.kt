@@ -1,5 +1,6 @@
 package com.coinstats.app.data.repository
 
+import com.coinstats.app.BuildConfig
 import com.coinstats.app.data.source.local.AppDatabase
 import com.coinstats.app.data.source.remote.CoinStatsApi
 import com.coinstats.app.domain.model.Coin
@@ -11,9 +12,10 @@ class CoinsRepositoryImpl(
     private val dataBase: AppDatabase,
     private val coinStatsApi: CoinStatsApi
 ) : CoinsRepository {
-    override fun getCoins(): Observable<List<Coin>> {
+    override fun getCoins(page: Int): Observable<List<Coin>> {
+        val skip = page * BuildConfig.ITEMS_PER_PAGE
         val remoteSource = coinStatsApi
-            .getCoins()
+            .getCoins(skip = skip)
             .map { it.coins }
             .map {
                 if (it.isNotEmpty())

@@ -7,8 +7,8 @@ import io.reactivex.Single
 import javax.inject.Inject
 
 class GetCoinsUseCase @Inject constructor(private val repository: CoinsRepository) {
-    fun getCoins(): Observable<List<Coin>> {
-        return repository.getCoins()
+    fun getCoins(page: Int): Observable<List<Coin>> {
+        return repository.getCoins(page)
     }
 
     fun searchCoins(keyword: String?): Single<List<Coin>> {

@@ -9,6 +9,7 @@ import retrofit2.http.Query
 interface CoinStatsApi {
     @GET("coins")
     fun getCoins(
+        @Query("skip") skip: Int = 0,
         @Query("limit") limit: Int = BuildConfig.ITEMS_PER_PAGE
     ): Single<CoinResponse>
 }

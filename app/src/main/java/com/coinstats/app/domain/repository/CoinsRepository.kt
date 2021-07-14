@@ -5,6 +5,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 
 interface CoinsRepository {
-    fun getCoins(): Observable<List<Coin>>
+    fun getCoins(page: Int): Observable<List<Coin>>
     fun searchCoins(keyword: String?): Single<List<Coin>>
 }
