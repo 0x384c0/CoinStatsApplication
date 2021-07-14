@@ -32,10 +32,7 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerView.adapter = adapter.withLoadStateHeaderAndFooter(
-            header = DataLoadStateAdapter(adapter),
-            footer = DataLoadStateAdapter(adapter)
-        )
+        binding.recyclerView.adapter = adapter.withLoadStateFooter(DataLoadStateAdapter(adapter))
     }
 
     @OptIn(FlowPreview::class)

@@ -48,6 +48,7 @@ The following diagram shows the structure of this project with 3 layers:
 - network and database modules are [mocked](app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
 
 ### TODO
+- Fix scroll issue at first start
 - creat CI pipeline for building and uploading release to Github
   - use github actions and fastlane
   - use [git-crypt](https://github.com/AGWA/git-crypt) for keeping signing data

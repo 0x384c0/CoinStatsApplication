@@ -11,7 +11,6 @@ import com.coinstats.app.data.source.remote.CoinStatsApi
 import com.coinstats.app.domain.model.Coin
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import java.io.InvalidObjectException
 
 //TODO: move to datasource
 @ExperimentalPagingApi
@@ -26,25 +25,15 @@ class PageKeyedRemoteMediator(
         return Single.just(loadType)
             .subscribeOn(Schedulers.io())
             .map {
-                when (it) {
-                    LoadType.REFRESH -> {
-                        val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-
-                        remoteKeys?.nextKey?.minus(1) ?: 1
-                    }
-                    LoadType.PREPEND -> {
-                        val remoteKeys = getRemoteKeyForFirstItem(state)
-                            ?: throw InvalidObjectException("Result is empty")
-
-                        remoteKeys.prevKey ?: INVALID_PAGE
-                    }
+                val result = when (it) {
+                    LoadType.PREPEND -> INVALID_PAGE
+                    LoadType.REFRESH -> 1
                     LoadType.APPEND -> {
                         val remoteKeys = getRemoteKeyForLastItem(state)
-                            ?: throw InvalidObjectException("Result is empty")
-
-                        remoteKeys.nextKey ?: INVALID_PAGE
+                        remoteKeys?.nextKey ?: 2
                     }
                 }
+                result
             }
             .flatMap { page ->
 
@@ -94,20 +83,6 @@ class PageKeyedRemoteMediator(
     private fun getRemoteKeyForLastItem(state: PagingState<Int, Coin>): CoinRemoteKeys? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { repo ->
             db.coinRemoteKeysDao.delete(repo.id)
-        }
-    }
-
-    private fun getRemoteKeyForFirstItem(state: PagingState<Int, Coin>): CoinRemoteKeys? {
-        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { coin ->
-            db.coinRemoteKeysDao.delete(coin.id)
-        }
-    }
-
-    private fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, Coin>): CoinRemoteKeys? {
-        return state.anchorPosition?.let { position ->
-            state.closestItemToPosition(position)?.id?.let { id ->
-                db.coinRemoteKeysDao.delete(id)
-            }
         }
     }
 
