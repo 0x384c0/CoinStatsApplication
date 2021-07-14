@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.rxjava2.RxRemoteMediator
+import com.coinstats.app.BuildConfig
 import com.coinstats.app.data.source.local.AppDatabase
 import com.coinstats.app.data.source.local.model.CoinRemoteKeys
 import com.coinstats.app.data.source.remote.CoinStatsApi
@@ -52,8 +53,8 @@ class PageKeyedRemoteMediator(
                     Single.just(MediatorResult.Success(endOfPaginationReached = true))
                 } else {
                     api.getCoins(
-                        skip = (page - 1) * 20,
-                        limit = 20
+                        skip = (page - 1) * BuildConfig.ITEMS_PER_PAGE,
+                        limit = BuildConfig.ITEMS_PER_PAGE
                     )
                         .map { it.coins }
                         .map { insertToDb(page, loadType, it) }

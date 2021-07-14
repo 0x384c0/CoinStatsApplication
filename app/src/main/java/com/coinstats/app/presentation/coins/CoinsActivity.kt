@@ -5,21 +5,24 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.Menu
 import androidx.appcompat.widget.SearchView
+import androidx.paging.LoadState
 import com.coinstats.app.R
 import com.coinstats.app.databinding.ActivityCoinsBinding
 import com.coinstats.app.presentation.base.BaseActivity
 import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
+import com.coinstats.app.presentation.coins.adapter.DataLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     //region Loading
     override fun showLoading() {
-        binding.swipeRefreshLayout.isRefreshing = true
+        //TODOD; remove
+//        binding.swipeRefreshLayout.isRefreshing = true
     }
 
     override fun hideLoading() {
-        binding.swipeRefreshLayout.isRefreshing = false
+//        binding.swipeRefreshLayout.isRefreshing = false
     }
     //endregion
 
@@ -31,9 +34,29 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     private val adapter by lazy { CoinsAdapter(layoutInflater) }
 
     override fun setupView() {
-        binding.recyclerView.adapter = adapter
+        setupRecyclerView()
+        setupSwipeToRefresh()
     }
 
+    private fun setupRecyclerView() {
+        binding.recyclerView.adapter = adapter.withLoadStateHeaderAndFooter(
+            header = DataLoadStateAdapter(adapter),
+            footer = DataLoadStateAdapter(adapter)
+        )
+    }
+
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            adapter.refresh()
+        }
+        adapter.addLoadStateListener { loadStates ->
+            binding.swipeRefreshLayout.isRefreshing =
+                loadStates.mediator?.refresh is LoadState.Loading
+        }
+    }
+    //endregion
+
+    //region Menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
         // Associate searchable configuration with the SearchView
@@ -58,11 +81,6 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     //region MVVM
     private val viewModel by lazy { getViewModel(CoinsViewModel::class.java) }
     override fun bindData() {
-        binding.swipeRefreshLayout.isEnabled = false
-//        binding.swipeRefreshLayout.setOnRefreshListener {
-//            viewModel.refresh()
-//        }
-
         viewModel.coinsPagingBinding.observe(this) {
             adapter.submitData(lifecycle, it)
         }

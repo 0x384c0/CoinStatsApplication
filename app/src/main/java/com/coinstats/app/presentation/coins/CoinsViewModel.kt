@@ -28,7 +28,6 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
         searchKeyword.onNext(keyword ?: "")
     }
 
-
     override fun onCreate() {
         setupCoinsBinding()
 //        searchKeyword
