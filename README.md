@@ -1,12 +1,12 @@
 # CoinStats App
-A sample android app that shows 20 most popular crypto currencies and able to search by keywords al local database
+A sample android app that shows popular crypto currencies and able to search by keywords within local database
 
 ### Build Requrements
 - Android Studio 4.2.2
 
 ### Limitations
 - public [CoinStats api](https://documenter.getpostman.com/view/5734027/RzZ6Hzr3) does not support search by keywords, only [private api](https://api.coin-stats.com/v4/coins?&limit=5&keyword=doge) does, but it is obfuscated
-- so in this app it possible to search within cached data only (20 most popular crypto currencies)
+- so in this app it possible to search within cached data only
 
 ### Implemented by Clean Architecture
 The following diagram shows the structure of this project with 3 layers:
@@ -22,11 +22,22 @@ The following diagram shows the structure of this project with 3 layers:
 1. UI calls method from ViewModel.
 1. ViewModel executes Use case.
 1. Use case obtains data from Repository
-1. Repository returns data from a Data Source (Cached or Remote).
+1. Repository returns data from a Data Source.
 1. Information flows back to the UI where we display the list of posts.
+
+### Data Source
+
+1. [Android Paging Library](https://developer.android.com/jetpack/androidx/releases/paging#paging-*-3.0.0) is used for paging and caching
+1. Local Database is a single source of truth
+1. [RemoteMediator](app/src/main/java/com/coinstats/app/data/repository/paging/PageKeyedRemoteMediator.kt) loads data to Database, when app has run out of cached data
+1. Database will be invalidated, when user refreshes the list
+1. search by keywords occur only within PagingSource
+1. PagingSource is implemented with Room
+
 
 ### Frameworks
 
+1. [Paging library 3](https://developer.android.com/jetpack/androidx/releases/paging#paging-*-3.0.0)
 1. [AndroidX](https://developer.android.com/jetpack/androidx)
 1. [Hilt](https://dagger.dev/hilt/)
 1. [RxJava](https://github.com/ReactiveX/RxJava)
