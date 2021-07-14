@@ -2,7 +2,7 @@ package com.coinstats.app.domain.usecase
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
-import androidx.paging.RemoteMediator
+import androidx.paging.rxjava2.RxRemoteMediator
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.repository.CoinsRepository
 import io.reactivex.Single
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class GetCoinsUseCase @Inject constructor(private val repository: CoinsRepository) {
     @OptIn(ExperimentalPagingApi::class)
-    fun getRemoteMediator(): RemoteMediator<Int, Coin> {
+    fun getRemoteMediator(): RxRemoteMediator<Int, Coin> {
         return repository.getRemoteMediator()
     }
 

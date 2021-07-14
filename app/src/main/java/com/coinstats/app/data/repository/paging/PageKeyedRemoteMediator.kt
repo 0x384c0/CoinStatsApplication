@@ -27,7 +27,6 @@ class PageKeyedRemoteMediator(
             .subscribeOn(Schedulers.io())
             .map {
                 when (it) {
-
                     LoadType.REFRESH -> {
                         val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
 

@@ -2,7 +2,7 @@ package com.coinstats.app.data.repository
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
-import androidx.paging.RemoteMediator
+import androidx.paging.rxjava2.RxRemoteMediator
 import com.coinstats.app.data.repository.paging.PageKeyedRemoteMediator
 import com.coinstats.app.data.source.local.AppDatabase
 import com.coinstats.app.data.source.remote.CoinStatsApi
@@ -25,7 +25,7 @@ class CoinsRepositoryImpl(
     }
 
     @OptIn(ExperimentalPagingApi::class)
-    override fun getRemoteMediator(): RemoteMediator<Int, Coin> {
+    override fun getRemoteMediator(): RxRemoteMediator<Int, Coin> {
         return PageKeyedRemoteMediator(dataBase, coinStatsApi)
     }
 
