@@ -48,22 +48,6 @@ abstract class BaseMVVMViewBindingActivity<T: ViewBinding>: BaseViewBindingActiv
             _viewModels.add(viewModel)
         viewModel.showAlertBinding.observe(this) { showAlert(it) }
         viewModel.showAlertStringBinding.observe(this) { showAlert(it) }
-        viewModel.showLoadingBinding.observe(this) { loadingIndicatorStateChanged() }
-    }
-
-    private fun isLoading(): Boolean {
-        return _viewModels.map { it.showLoadingBinding.value }.contains(true)
-    }
-
-    private fun loadingIndicatorStateChanged() {
-        val isNeedShowLoading = isLoading()
-        try {
-            if (isNeedShowLoading)
-                showLoading()
-            else
-                hideLoading()
-        } catch (e: Exception) {
-        }
     }
 
     private var onCreateWasNotCalled = true
@@ -79,7 +63,5 @@ abstract class BaseMVVMViewBindingActivity<T: ViewBinding>: BaseViewBindingActiv
     abstract fun bindData()
     abstract fun showAlert(throwable:Throwable)
     abstract fun showAlert(string:String)
-    abstract fun showLoading()
-    abstract fun hideLoading()
     //endregion
 }

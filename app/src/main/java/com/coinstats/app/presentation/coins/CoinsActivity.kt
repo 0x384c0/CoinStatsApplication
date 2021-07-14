@@ -1,10 +1,9 @@
 package com.coinstats.app.presentation.coins
 
-import android.app.SearchManager
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.Menu
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import com.coinstats.app.R
 import com.coinstats.app.databinding.ActivityCoinsBinding
@@ -12,19 +11,13 @@ import com.coinstats.app.presentation.base.BaseActivity
 import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
 import com.coinstats.app.presentation.coins.adapter.DataLoadStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
-    //region Loading
-    override fun showLoading() {
-        //TODOD; remove
-//        binding.swipeRefreshLayout.isRefreshing = true
-    }
-
-    override fun hideLoading() {
-//        binding.swipeRefreshLayout.isRefreshing = false
-    }
-    //endregion
 
     //region View initialization
     override fun inflateViewBinding(layoutInflater: LayoutInflater): ActivityCoinsBinding {
@@ -45,6 +38,7 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
         )
     }
 
+    @OptIn(FlowPreview::class)
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             adapter.refresh()
@@ -53,6 +47,22 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
             binding.swipeRefreshLayout.isRefreshing =
                 loadStates.mediator?.refresh is LoadState.Loading
         }
+        lifecycleScope.launchWhenCreated {
+            adapter.loadStateFlow
+                .debounce(TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS))
+                .collect { loadStates ->
+                    val error = listOfNotNull(
+                        loadStates.mediator?.append,
+                        loadStates.mediator?.refresh,
+                        loadStates.mediator?.prepend
+                    )
+                        .filterIsInstance<LoadState.Error>()
+                        .firstOrNull()
+                    if (error != null) {
+                        viewModel.showAlert(error.error)
+                    }
+                }
+        }
     }
     //endregion
 
@@ -60,7 +70,6 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
         // Associate searchable configuration with the SearchView
-        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         (menu!!.findItem(R.id.search).actionView as SearchView).apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {

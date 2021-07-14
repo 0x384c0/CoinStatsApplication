@@ -57,4 +57,5 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
             }
             .disposedBy(compositeDisposable)
     }
+
 }
