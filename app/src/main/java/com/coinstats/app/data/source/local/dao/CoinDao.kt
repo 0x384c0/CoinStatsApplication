@@ -24,5 +24,5 @@ interface CoinDao {
     fun search(search: String): Single<List<Coin>>
 
     @Query("SELECT * FROM Coin")
-    fun getAllPaging(): PagingSource<Int, Coin>
+    fun getPagingSource(): PagingSource<Int, Coin>
 }

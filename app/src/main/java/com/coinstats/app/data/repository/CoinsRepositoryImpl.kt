@@ -1,6 +1,10 @@
 package com.coinstats.app.data.repository
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingSource
+import androidx.paging.RemoteMediator
 import com.coinstats.app.BuildConfig
+import com.coinstats.app.data.repository.paging.PageKeyedRemoteMediator
 import com.coinstats.app.data.source.local.AppDatabase
 import com.coinstats.app.data.source.remote.CoinStatsApi
 import com.coinstats.app.domain.model.Coin
@@ -40,5 +44,14 @@ class CoinsRepositoryImpl(
             dataBase.coinDao.getAll().toSingle()
         else
             dataBase.coinDao.search(keyword)
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getRemoteMediator(): RemoteMediator<Int, Coin> {
+        return PageKeyedRemoteMediator(dataBase, coinStatsApi)
+    }
+
+    override fun getPagingSource(): PagingSource<Int, Coin> {
+        return dataBase.coinDao.getPagingSource()
     }
 }

@@ -1,4 +1,4 @@
-package com.coinstats.app.presentation.coins
+package com.coinstats.app.data.repository.paging
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType

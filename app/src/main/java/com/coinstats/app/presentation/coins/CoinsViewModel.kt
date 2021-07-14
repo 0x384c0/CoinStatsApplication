@@ -9,8 +9,6 @@ import androidx.paging.PagingData
 import androidx.paging.rxjava2.cachedIn
 import androidx.paging.rxjava2.flowable
 import com.coinstats.app.BuildConfig
-import com.coinstats.app.data.source.local.AppDatabase
-import com.coinstats.app.data.source.remote.CoinStatsApi
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
 import com.coinstats.app.util.base_classes.BaseViewModel
@@ -24,37 +22,15 @@ import javax.inject.Inject
 class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUseCase) :
     BaseViewModel() {
     val coinsPagingBinding = MutableLiveData<PagingData<Coin>>()
-    private var searchKeyword = BehaviorSubject.createDefault<String>("")
-
-    fun refresh() {
-//        showLoading()
-//        getCoinsUseCase
-//            .getCoins(0)
-//            .subscribeMain(
-//                onNext = {
-//                    hideLoading()
-//                    coinsBinding.value = it
-//                },
-//                onError = this::showAlert
-//            )
-//            .disposedBy(compositeDisposable)
-    }
+    private var searchKeyword = BehaviorSubject.createDefault("")
 
     fun search(keyword: String?) {
         searchKeyword.onNext(keyword ?: "")
     }
 
-    //TODO: move to datasource
-    @Inject
-    lateinit var dataBase: AppDatabase
-
-    @Inject
-    lateinit var coinStatsApi: CoinStatsApi
-
 
     override fun onCreate() {
         setupCoinsBinding()
-//        refresh()
 //        searchKeyword
 //            .skip(1)
 //            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
@@ -70,9 +46,9 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
     private fun setupCoinsBinding() {
         Pager(
             config = PagingConfig(BuildConfig.ITEMS_PER_PAGE),
-            remoteMediator = PageKeyedRemoteMediator(dataBase, coinStatsApi),
+            remoteMediator = getCoinsUseCase.getRemoteMediator(),
             pagingSourceFactory = {
-                dataBase.coinDao.getAllPaging()
+                getCoinsUseCase.getPagingSource()
             }
         )
             .flowable

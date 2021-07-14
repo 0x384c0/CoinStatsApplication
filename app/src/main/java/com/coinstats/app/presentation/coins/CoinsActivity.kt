@@ -58,9 +58,10 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     //region MVVM
     private val viewModel by lazy { getViewModel(CoinsViewModel::class.java) }
     override fun bindData() {
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
-        }
+        binding.swipeRefreshLayout.isEnabled = false
+//        binding.swipeRefreshLayout.setOnRefreshListener {
+//            viewModel.refresh()
+//        }
 
         viewModel.coinsPagingBinding.observe(this) {
             adapter.submitData(lifecycle, it)
