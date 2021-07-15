@@ -47,7 +47,7 @@ class NumberFormatter {
                 formatSymbols.groupingSeparator = ' '
                 formatter4 = DecimalFormat("#,##0.0000", formatSymbols)
             }
-            return formatter4!!.format(balance)
+            return formatter4?.format(balance) ?: balance.toString()
         }
 
 
@@ -128,7 +128,7 @@ class NumberFormatter {
                 formatSymbols.groupingSeparator = ' '
                 formatter2 = DecimalFormat("#,##0.00", formatSymbols)
             }
-            return formatter2!!.format(balance)
+            return formatter2?.format(balance) ?: balance.toString()
         }
     }
 }

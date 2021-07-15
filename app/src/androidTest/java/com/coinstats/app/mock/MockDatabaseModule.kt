@@ -14,20 +14,20 @@ import javax.inject.Singleton
 
 @Module
 @TestInstallIn(
-    components = [SingletonComponent::class],
-    replaces = [DatabaseModule::class]
+        components = [SingletonComponent::class],
+        replaces = [DatabaseModule::class]
 )
 class MockDatabaseModule {
     @Provides
     @Singleton
     internal fun provideAppDatabase(): AppDatabase {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val db = Room.inMemoryDatabaseBuilder(
-            context,
-            AppDatabase::class.java
-        )
-            .build()
-        return db
+        return Room
+                .inMemoryDatabaseBuilder(
+                        context,
+                        AppDatabase::class.java
+                )
+                .build()
     }
 
     @Provides

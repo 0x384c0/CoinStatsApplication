@@ -37,20 +37,7 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
     //region LifeCycle
     override fun onCreate() {
         setupCoinsBinding()
-        searchKeyword
-            .skip(1)
-            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
-            .flatMapSingle { query -> getCoinsUseCase.searchCoins(query).map { query to it } }
-            .subscribeMain(onNext = {
-                val isSearching = it.first.isBlank().not()
-                if (isSearching) {
-                    coinsSearchBinding.value = PagingData.from(it.second)
-                } else {
-                    coinsPagingBinding.value = coinsPagingBinding.value
-                }
-                refreshEnabled.value = isSearching.not()
-            })
-            .disposedBy(compositeDisposable)
+        setupSearch()
     }
     //endregion
 
@@ -69,6 +56,23 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
             .subscribe {
                 coinsPagingBinding.value = it
             }
+            .disposedBy(compositeDisposable)
+    }
+
+    private fun setupSearch(){
+        searchKeyword
+            .skip(1)
+            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
+            .flatMapSingle { query -> getCoinsUseCase.searchCoins(query).map { query to it } }
+            .subscribeMain(onNext = {
+                val isSearching = it.first.isBlank().not()
+                if (isSearching) {
+                    coinsSearchBinding.value = PagingData.from(it.second)
+                } else {
+                    coinsPagingBinding.value = coinsPagingBinding.value
+                }
+                refreshEnabled.value = isSearching.not()
+            })
             .disposedBy(compositeDisposable)
     }
     //endregion
