@@ -12,6 +12,9 @@ import com.coinstats.app.domain.model.Coin
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
+/**
+ * RemoteMediator that controls loading dada from API
+ */
 @ExperimentalPagingApi
 class PageKeyedRemoteMediator(
     private val database: AppDatabase,

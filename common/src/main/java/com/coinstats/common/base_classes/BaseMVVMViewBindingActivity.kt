@@ -60,8 +60,11 @@ abstract class BaseMVVMViewBindingActivity<T: ViewBinding>: BaseViewBindingActiv
     //endregion
 
     //region Abstract
+    /**
+     * called after view setup and ready to bind data
+     */
     abstract fun bindData()
-    abstract fun showAlert(throwable:Throwable)
-    abstract fun showAlert(string:String)
+    abstract fun showAlert(throwable: Throwable)
+    abstract fun showAlert(string: String)
     //endregion
 }

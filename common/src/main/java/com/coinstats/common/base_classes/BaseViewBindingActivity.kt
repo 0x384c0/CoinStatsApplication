@@ -18,7 +18,17 @@ abstract class BaseViewBindingActivity<T:ViewBinding>:AppCompatActivity() {
     //endregion
 
     //region Abstract
-    abstract fun inflateViewBinding(layoutInflater:LayoutInflater):T
+    /**
+     * called in onCreate when ViewBinding layout is needed
+     *
+     * @property layoutInflater layoutInflater from onCreate
+     * @return Created ViewBinding
+     */
+    abstract fun inflateViewBinding(layoutInflater: LayoutInflater): T
+
+    /**
+     * called after view is initialized
+     */
     abstract fun setupView()
     //endregion
 }
