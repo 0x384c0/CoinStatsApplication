@@ -1,6 +1,8 @@
 # CoinStats App
 A sample android app that shows popular crypto currencies and able to search by keywords within local database
 
+![Demo](/media/ffmpeg_out.gif)
+
 ### Build Requrements
 - Android Studio 4.2.2
 
@@ -8,14 +10,21 @@ A sample android app that shows popular crypto currencies and able to search by 
 - public [CoinStats api](https://documenter.getpostman.com/view/5734027/RzZ6Hzr3) does not support search by keywords, only [private api](https://api.coin-stats.com/v4/coins?&limit=5&keyword=doge) does, but it is obfuscated
 - so in this app it possible to search within cached data only
 
+### Configuration
+- API url and other constants can be set in [gradle.file](/app/build.gradle)
+- there is two build variants, "debug" and "release", that can be configured independently
+
 ### Implemented by Clean Architecture
 The following diagram shows the structure of this project with 3 layers:
+
 - [Presentation](/app/src/main/java/com/coinstats/app/presentation)
-  - [CoinsActivity](app/src/main/java/com/coinstats/app/presentation/coins/CoinsActivity.kt)
+  - [CoinsActivity](/app/src/main/java/com/coinstats/app/presentation/coins/CoinsActivity.kt)
 - [Domain](/app/src/main/java/com/coinstats/app/domain)
-  - [GetCoinsUseCase](app/src/main/java/com/coinstats/app/domain/usecase/GetCoinsUseCase.kt) 
+  - [GetCoinsUseCase](/app/src/main/java/com/coinstats/app/domain/usecase/GetCoinsUseCase.kt) 
 - [Data](/app/src/main/java/com/coinstats/app/data)
-  - [CoinsRepositoryImpl](app/src/main/java/com/coinstats/app/data/repository/CoinsRepositoryImpl.kt) 
+  - [CoinsRepositoryImpl](/app/src/main/java/com/coinstats/app/data/repository/CoinsRepositoryImpl.kt) 
+
+![Diagramm](/media/diagram_figma_out.jpg)
   
 ### Communication between layers
 
@@ -23,13 +32,13 @@ The following diagram shows the structure of this project with 3 layers:
 1. ViewModel executes Use case.
 1. Use case obtains data from Repository
 1. Repository returns data from a Data Source.
-1. Information flows back to the UI where we display the list of posts.
+1. Information flows back to the UI where we display the list of coins.
 
 ### Data Source
 
 1. [Android Paging Library](https://developer.android.com/jetpack/androidx/releases/paging#paging-*-3.0.0) is used for paging and caching
 1. Local Database is a single source of truth
-1. [RemoteMediator](app/src/main/java/com/coinstats/app/data/repository/paging/PageKeyedRemoteMediator.kt) loads data to Database, when app has run out of cached data
+1. [RemoteMediator](/app/src/main/java/com/coinstats/app/data/repository/paging/PageKeyedRemoteMediator.kt) loads data to Database, when app has run out of cached data
 1. Database will be invalidated, when user refreshes the list
 1. search by keywords occur only within PagingSource
 1. PagingSource is implemented with Room
@@ -44,8 +53,9 @@ The following diagram shows the structure of this project with 3 layers:
 1. [Retrofit](https://square.github.io/retrofit/)
 
 ### Tests
-- there is [GetCoinsUseCaseTests](app/src/androidTest/java/com/coinstats/app/GetCoinsUseCaseTests.kt) created to cover domain logick
-- network and database modules are [mocked](app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
+- for testing is used [recommended](https://developer.android.com/training/data-storage/room/testing-db) approact to write a JUnit test that runs on an Android device, so Adnroid Studio is requred for runnning tests
+- there is [GetCoinsUseCaseTests](/app/src/androidTest/java/com/coinstats/app/GetCoinsUseCaseTests.kt) created to cover domain logick
+- network and database modules are [mocked](/app/src/androidTest/java/com/coinstats/app/mock/) with Hilt
 
 ### TODO
 - Fix scroll issue at first start
