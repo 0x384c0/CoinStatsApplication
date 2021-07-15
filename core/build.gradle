@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            //Constants
+            buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+
+            //Constants
+            buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+    //DI
+    implementation "com.google.dagger:hilt-android:2.37"
+    kapt "com.google.dagger:hilt-android-compiler:2.37"
+    //RxJava
+    api "io.reactivex.rxjava2:rxandroid:2.1.1"
+
+    //Networking
+    api "com.squareup.retrofit2:retrofit:2.9.0"
+    api "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
+    api "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
+}
