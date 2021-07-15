@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -21,6 +23,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            //Constants
+            buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+
+            //Constants
+            buildConfigField 'String', 'API_URL', '"https://api.coinstats.app/public/v1/"'
         }
     }
     compileOptions {
@@ -30,19 +42,18 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
-    //Android
-    implementation "androidx.core:core-ktx:$androidx_core_version"
-    implementation "androidx.appcompat:appcompat:$androidx_app_compat_version"
-
+    //DI
+    implementation "com.google.dagger:hilt-android:2.37"
+    kapt "com.google.dagger:hilt-android-compiler:2.37"
     //RxJava
-    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    api "io.reactivex.rxjava2:rxandroid:2.1.1"
 
     //Networking
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    api "com.squareup.retrofit2:retrofit:2.9.0"
+    api "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
+    api "com.squareup.retrofit2:converter-gson:2.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
 }

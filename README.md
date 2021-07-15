@@ -11,8 +11,14 @@ A sample android app that shows popular crypto currencies and able to search by 
 - so in this app it possible to search within cached data only
 
 ### Configuration
-- API url and other constants can be set in [gradle.file](/app/build.gradle)
+- API url can be set in [core/build.gradle](/core/build.gradle)
 - there is two build variants, "debug" and "release", that can be configured independently
+
+### Modules
+App consist of 3 modules
+- [app](/app) - constains crypto currencies list feature
+- [core](/core) - contains specific for this project code, like Retrofit setup
+- [common](/common) - contains utilites and helpers, that can be used in eny project
 
 ### Implemented by Clean Architecture
 The following diagram shows the structure of this project with 3 layers:
