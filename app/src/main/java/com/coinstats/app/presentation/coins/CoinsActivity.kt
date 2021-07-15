@@ -10,32 +10,51 @@ import com.coinstats.app.databinding.ActivityCoinsBinding
 import com.coinstats.app.presentation.base.BaseActivity
 import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
 import com.coinstats.app.presentation.coins.adapter.DataLoadStateAdapter
+import com.coinstats.common.extensions.setOnQueryListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.debounce
 import java.util.concurrent.TimeUnit
 
+/**
+ * Activity, that show Coins List and search
+ */
 @AndroidEntryPoint
 class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
 
     //region View initialization
+    /**
+     * called in onCreate when ViewBinding layout is needed
+     *
+     * @property layoutInflater layoutInflater from onCreate
+     * @return Created ViewBinding
+     */
     override fun inflateViewBinding(layoutInflater: LayoutInflater): ActivityCoinsBinding {
         return ActivityCoinsBinding.inflate(layoutInflater)
     }
 
-    private val adapter by lazy { CoinsAdapter(layoutInflater) }
-
+    /**
+     * called after view is initialized
+     */
     override fun setupView() {
         setupRecyclerView()
         setupSwipeToRefresh()
+        setupLoadStateListener()
     }
 
+    private val adapter by lazy { CoinsAdapter(layoutInflater) }
+
+    /**
+     * setup recycler view
+     */
     private fun setupRecyclerView() {
         binding.recyclerView.adapter = adapter.withLoadStateFooter(DataLoadStateAdapter(adapter))
     }
 
-    @OptIn(FlowPreview::class)
+    /**
+     * setup swipe to refresh
+     */
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             adapter.refresh()
@@ -44,6 +63,13 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
             binding.swipeRefreshLayout.isRefreshing =
                 loadStates.mediator?.refresh is LoadState.Loading
         }
+    }
+
+    /**
+     * setup load state listener
+     */
+    @OptIn(FlowPreview::class)
+    private fun setupLoadStateListener() {
         lifecycleScope.launchWhenCreated {
             adapter.loadStateFlow
                 .debounce(TimeUnit.MILLISECONDS.convert(1, TimeUnit.SECONDS))
@@ -66,26 +92,18 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
     //region Menu
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
-        // Associate searchable configuration with the SearchView
-        (menu!!.findItem(R.id.search).actionView as SearchView).apply {
-            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    viewModel.search(query)
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    viewModel.search(newText)
-                    return true
-                }
-            })
-        }
+        val searchView = (menu?.findItem(R.id.search)?.actionView as? SearchView)
+        searchView?.setOnQueryListener { viewModel.search(it) }
         return true
     }
     //endregion
 
     //region MVVM
     private val viewModel by lazy { getViewModel(CoinsViewModel::class.java) }
+
+    /**
+     * called after view setup and ready to bind data
+     */
     override fun bindData() {
         viewModel.coinsPagingBinding.observe(this) {
             adapter.submitData(lifecycle, it)

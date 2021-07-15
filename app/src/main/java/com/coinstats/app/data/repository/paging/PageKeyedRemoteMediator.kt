@@ -12,10 +12,12 @@ import com.coinstats.app.domain.model.Coin
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
-//TODO: move to datasource
+/**
+ * RemoteMediator that controls loading dada from API
+ */
 @ExperimentalPagingApi
 class PageKeyedRemoteMediator(
-    private val db: AppDatabase,
+    private val database: AppDatabase,
     private val api: CoinStatsApi
 ) : RxRemoteMediator<Int, Coin>() {
     override fun loadSingle(
@@ -54,14 +56,11 @@ class PageKeyedRemoteMediator(
             .onErrorReturn { MediatorResult.Error(it) }
     }
 
-    @Suppress("DEPRECATION")
     private fun insertToDb(page: Int, loadType: LoadType, data: List<Coin>): List<Coin> {
-        db.beginTransaction()
-
-        try {
+        database.runInTransaction {
             if (loadType == LoadType.REFRESH) {
-                db.coinRemoteKeysDao.deleteAll()
-                db.coinDao.deleteAll()
+                database.coinRemoteKeysDao.deleteAll()
+                database.coinDao.deleteAll()
             }
 
             val prevKey = if (page == 1) null else page - 1
@@ -69,20 +68,15 @@ class PageKeyedRemoteMediator(
             val keys = data.map {
                 CoinRemoteKeys(coinId = it.id, prevKey = prevKey, nextKey = nextKey)
             }
-            db.coinRemoteKeysDao.insertAll(keys)
-            db.coinDao.insertAll(data)
-            db.setTransactionSuccessful()
-
-        } finally {
-            db.endTransaction()
+            database.coinRemoteKeysDao.insertAll(keys)
+            database.coinDao.insertAll(data)
         }
-
         return data
     }
 
     private fun getRemoteKeyForLastItem(state: PagingState<Int, Coin>): CoinRemoteKeys? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { repo ->
-            db.coinRemoteKeysDao.delete(repo.id)
+            database.coinRemoteKeysDao.delete(repo.id)
         }
     }
 

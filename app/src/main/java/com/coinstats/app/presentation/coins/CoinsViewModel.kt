@@ -11,15 +11,18 @@ import androidx.paging.rxjava2.flowable
 import com.coinstats.app.BuildConfig
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
-import com.coinstats.app.util.base_classes.BaseViewModel
-import com.coinstats.app.util.extensions.disposedBy
-import com.coinstats.app.util.extensions.subscribeMain
+import com.coinstats.common.base_classes.BaseViewModel
+import com.coinstats.common.extensions.disposedBy
+import com.coinstats.common.extensions.subscribeMain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+/**
+ * ViewModel, that controls Coins List
+ */
 @HiltViewModel
 class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUseCase) :
     BaseViewModel() {
@@ -29,6 +32,11 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
     val coinsSearchBinding = MutableLiveData<PagingData<Coin>>()
     private var searchKeyword = BehaviorSubject.createDefault("")
 
+    /**
+     * perform a search within a database
+     *
+     * @property keyword search query
+     */
     fun search(keyword: String?) {
         searchKeyword.onNext(keyword ?: "")
     }
@@ -37,24 +45,14 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
     //region LifeCycle
     override fun onCreate() {
         setupCoinsBinding()
-        searchKeyword
-            .skip(1)
-            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
-            .flatMapSingle { query -> getCoinsUseCase.searchCoins(query).map { query to it } }
-            .subscribeMain(onNext = {
-                val isSearching = it.first.isBlank().not()
-                if (isSearching) {
-                    coinsSearchBinding.value = PagingData.from(it.second)
-                } else {
-                    coinsPagingBinding.value = coinsPagingBinding.value
-                }
-                refreshEnabled.value = isSearching.not()
-            })
-            .disposedBy(compositeDisposable)
+        setupSearch()
     }
     //endregion
 
     //region Others
+    /**
+     * setup coins binding
+     */
     @OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
     private fun setupCoinsBinding() {
         Pager(
@@ -69,6 +67,26 @@ class CoinsViewModel @Inject constructor(private val getCoinsUseCase: GetCoinsUs
             .subscribe {
                 coinsPagingBinding.value = it
             }
+            .disposedBy(compositeDisposable)
+    }
+
+    /**
+     * setup search
+     */
+    private fun setupSearch() {
+        searchKeyword
+            .skip(1)
+            .debounce(BuildConfig.SEARCH_DELAY_SEC, TimeUnit.SECONDS)
+            .flatMapSingle { query -> getCoinsUseCase.searchCoins(query).map { query to it } }
+            .subscribeMain(onNext = {
+                val isSearching = it.first.isBlank().not()
+                if (isSearching) {
+                    coinsSearchBinding.value = PagingData.from(it.second)
+                } else {
+                    coinsPagingBinding.value = coinsPagingBinding.value
+                }
+                refreshEnabled.value = isSearching.not()
+            })
             .disposedBy(compositeDisposable)
     }
     //endregion

@@ -2,7 +2,7 @@ package com.coinstats.app.presentation.base
 
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import com.coinstats.app.util.base_classes.BaseMVVMViewBindingActivity
+import com.coinstats.common.base_classes.BaseMVVMViewBindingActivity
 import com.google.android.material.snackbar.Snackbar
 
 abstract class BaseActivity<T : ViewBinding> : BaseMVVMViewBindingActivity<T>() {
