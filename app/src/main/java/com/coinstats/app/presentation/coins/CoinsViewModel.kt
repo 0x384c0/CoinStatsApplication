@@ -11,9 +11,9 @@ import androidx.paging.rxjava2.flowable
 import com.coinstats.app.BuildConfig
 import com.coinstats.app.domain.model.Coin
 import com.coinstats.app.domain.usecase.GetCoinsUseCase
-import com.coinstats.app.util.base_classes.BaseViewModel
-import com.coinstats.app.util.extensions.disposedBy
-import com.coinstats.app.util.extensions.subscribeMain
+import com.coinstats.common.base_classes.BaseViewModel
+import com.coinstats.common.extensions.disposedBy
+import com.coinstats.common.extensions.subscribeMain
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.subjects.BehaviorSubject
 import kotlinx.coroutines.ExperimentalCoroutinesApi

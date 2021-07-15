@@ -3,8 +3,8 @@ package com.coinstats.app.presentation.coins.adapter
 import androidx.recyclerview.widget.RecyclerView
 import com.coinstats.app.databinding.ItemCoinBinding
 import com.coinstats.app.domain.model.Coin
-import com.coinstats.app.util.extensions.load
-import com.coinstats.app.util.extensions.toAmount
+import com.coinstats.common.extensions.load
+import com.coinstats.common.extensions.toAmount
 
 class CoinsViewHolder(
     private val binding: ItemCoinBinding

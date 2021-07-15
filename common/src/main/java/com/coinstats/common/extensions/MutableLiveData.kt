@@ -1,4 +1,4 @@
-package com.coinstats.app.util.extensions
+package com.coinstats.common.extensions
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData

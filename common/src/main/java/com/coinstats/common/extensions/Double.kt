@@ -1,6 +1,6 @@
-package com.coinstats.app.util.extensions
+package com.coinstats.common.extensions
 
-import com.coinstats.app.util.NumberFormatter
+import com.coinstats.common.utils.NumberFormatter
 
 fun Double.toAmount(currency:String): String {
     return "${toAmount()} $currency"

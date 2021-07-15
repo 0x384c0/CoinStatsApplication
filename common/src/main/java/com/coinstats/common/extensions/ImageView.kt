@@ -1,4 +1,4 @@
-package com.coinstats.app.util.extensions
+package com.coinstats.common.extensions
 
 import android.widget.ImageView
 import com.squareup.picasso.Picasso

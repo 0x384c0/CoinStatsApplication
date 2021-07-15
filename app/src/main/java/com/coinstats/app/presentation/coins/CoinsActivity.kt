@@ -10,7 +10,7 @@ import com.coinstats.app.databinding.ActivityCoinsBinding
 import com.coinstats.app.presentation.base.BaseActivity
 import com.coinstats.app.presentation.coins.adapter.CoinsAdapter
 import com.coinstats.app.presentation.coins.adapter.DataLoadStateAdapter
-import com.coinstats.app.util.extensions.setOnQueryListener
+import com.coinstats.common.extensions.setOnQueryListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collect

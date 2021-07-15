@@ -1,4 +1,4 @@
-package com.coinstats.app.util
+package com.coinstats.common.utils
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

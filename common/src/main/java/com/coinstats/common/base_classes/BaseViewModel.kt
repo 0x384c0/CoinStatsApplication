@@ -1,4 +1,4 @@
-package com.coinstats.app.util.base_classes
+package com.coinstats.common.base_classes
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
