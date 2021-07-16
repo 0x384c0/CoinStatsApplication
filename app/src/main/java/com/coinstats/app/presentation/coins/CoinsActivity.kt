@@ -49,7 +49,9 @@ class CoinsActivity : BaseActivity<ActivityCoinsBinding>() {
      * setup recycler view
      */
     private fun setupRecyclerView() {
-        binding.recyclerView.adapter = adapter.withLoadStateFooter(DataLoadStateAdapter(adapter))
+        binding.recyclerView.adapter = adapter.withLoadStateFooter(
+            DataLoadStateAdapter(adapter, layoutInflater)
+        )
     }
 
     /**
